@@ -1,0 +1,187 @@
+---
+# title: "One Time Alliance "
+title: "FPTP Strategizer"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row #columns #  #__default columns__ rows columns
+    vertical_layout: fill #scroll # fill # scroll  #fill  #default fill
+    navbar: 
+      - { title: "One Time Alliance", href: "http://www.onetimealliance.ca", align: right }
+      - { title: "Fair Vote BC", href: "https://fairvotingbc.com", align: right }
+#   html_document:
+#     number_sections: true
+#     # code_folding: hide # need knitr::opts_chunk$set(echo=T)
+#     toc: true
+#     # toc_depth: 4
+#     toc_float: true
+#     # collapsed: true
+#    # smooth_scroll: true
+#     # smooth_scrool: true
+# # author: "Dmitry Gorodnichy"
+# author: "Dmitry Gorodnichy (Contact: dmitry@gorodnichy.ca)"
+# date: "Draft. Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+# # runtime: shiny
+---
+
+
+```{r source, include=FALSE, warning=FALSE, echo=F}
+source("election01_read.R")
+input <- list()
+
+```
+# BC 2020 elections
+
+## BC {data-height=1000 .tabset .tabset-fade }
+
+
+### Opportunities for "Win-win" alliance
+
+```{r dtByProvince}
+dtBC %>%     kable(
+    # caption = "BC 2020"
+  )
+```
+
+
+### Interactive table
+
+
+```{r}
+
+dtBC %>% d7.datatable(3,3)
+
+```
+
+# Federal 44th election
+
+
+## {data-height=400 .tabset .tabset-fade }
+
+<!-- THIS PAGE IS UNDER CONSTRUCTION -->
+
+### Table 1: Negated votes - by region
+
+<!-- Seats vs Votes,   -->
+<!-- FPTP bias by region totals. -->
+
+
+ Negated votes are those that were de-facto ignored (or "negated") by the FPTP electoral system, i.e. the party that was elected *does NOT* represent the voices of those voters.
+ 
+The objective of any democratic society is to minimize the percentage of voters whose voices are "negated" at the election, by minimizing the biases of the  electoral system towards certain political parties.
+
+
+```{r}
+
+
+
+caption1 <- "Table 1: FPTP bias (Seats share vs. Votes shares) - by province."
+# dtByProvince %>% kable(    caption = caption1  )
+
+dtByProvince %>% datatable (
+  rownames = F, 
+
+  # filter = "top",
+  # caption = caption1,
+  extensions = c('Buttons', 'FixedColumns'), # Scrolle doe work at Rmd ???
+  # extensions = c('Buttons', 'FixedColumns','Scroller'),    
+  options = list(
+    fixedColumns = list(leftColumns = 1, rightColumns = 2), 
+      # DisplayLength = 20,
+    # lengthMenu = c( 10, 25, 50, 75, 100 ),
+    # lengthChange =  false,
+    pageLength = 20,
+      dom = 't', # show Search and Show [] entries
+          # dom = 'Blfrtip',
+      scrollX = TRUE,
+      scrollY = TRUE,
+    buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+  )
+  
+)
+```
+
+
+### Table 2: Electoral Biases - by region
+
+ The Electoral system bias is defined as the difference between the share of Seats  the party gets and share of Votes the party receives in a region
+
+```{r}
+dtBias[order(-total,Bias)] %>% d7.datatable
+```
+
+
+
+
+### Table 3: Detailed analysis - by riding
+
+
+
+<!-- ```{r } -->
+<!-- dtByRiding %>%     kable(     -->
+<!--   # caption = "Table 2" -->
+<!--   ) -->
+<!-- ``` -->
+
+<!-- ### Interactive -->
+```{r}
+dtByRiding %>% d7.datatable (3,0)
+```
+
+
+
+```{r}
+dtByRiding1[ order(-get(colTogetherOver1st) ) ]   %>% d7.datatable(1,2)
+```
+
+
+### Table 4: Opportunities for "win-win". Case study - Alberta
+
+
+In the case of Alberta, the party that has the largest positive  bias  from the FPTP system is the Conservative. All other parties are greatly disadvantaged. By making the alliances however, they will be able to mitigate  the negative bias of the FPTP electoral system and get collectively more seats, while reducing the overall  percentage of negated votes in this region.
+
+
+The data is sorted by likelihood (i.e. margin between the number of votes of the winner and the combined number of votes of the alliance parties) . 
+The data for other regions will be added later.
+
+```{r}
+dtByRiding1[ order(-get(colTogetherOver1st) ) ]   %>% d7.datatable(1,2)
+```
+
+
+<!-- #  Info {data-icon="fa-info-circle"} -->
+#  {data-icon="fa-info-circle"}
+
+
+###  App Info
+
+Please note that this App is UNDER CONTRUCTION
+
+<!-- ####  Technical details -->
+
+*Name*: FPTP Election Strategizer   
+*Type*: Web Application. Compatible with mobile devices.   
+<!-- *URL*: https://itrack.shinyapps.io/covid     -->
+*App permissions*: none     
+*License*:  [CC BY-NC](https://creativecommons.org/licenses/by-nc/4.0/legalcode).   
+<!-- License: Open Government Licence - Canada -->
+<!-- *Developer*: [Dmitry Gorodnichy](https://www.linkedin.com/in/dmitry-gorodnichy/)       -->
+<!-- *Developer*: [DG](www.gorodnichy.ca) -->
+
+*Questions/Comments:* dg@ivim.ca
+
+#### Raison d'être
+
+As articulated by [www.fairvote.ca](https://www.fairvote.ca/what-is-first-past-the-post/),  Canada uses a century old *First Past The Post (FPTP)* electoral system, which favours large parties and greatly disadvantages small parties.
+Until such system is abolished in favour of more a democratic system, e.g., [proportional representation](), [ranking (aka preferential) voting](), or [Second Ballot Majority Runoff]() used [elsewhere](http://www.stevendroper.com/elect_system.html), 
+the parties that have similar agendas will always be disadvantaged due to splitting the votes between them, and have less share of seats in the parliament than their share of popular votes, or may not have any seats at all representing the region.Nevertheless, it is still possible for disadvantaged parties to gain more seats in FPTP system, for *all of them* -- should there be a political will to do that -- by building *one time alliances* and using data science. This Web Application is designed to help those parties to do so.
+
+
+
+
+#### Disclaimer
+
+
+This Application is developed in support of the [Fair Vote Canada](https://www.fairvote.ca/), [Fair Vote BC](https://fairvotingbc.com/) and [One Time Alliance for Democratic Reform](http://www.onetimealliance.ca). It is not funded by any   political party or organization. 
+
+<!-- This article and the Application are developed in support of the Fair Vote Canada and [One Time Alliance for Democratic Reform (OTA4DR)](https://www.facebook.com/groups/862670447498771), and not in support of any particular political party. It  -->
+

@@ -1,0 +1,30 @@
+---
+# title: "One Time Alliance "
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: row #columns #  #__default columns__ rows columns
+    vertical_layout: fill #scroll # fill # scroll  #fill  #default fill
+    navbar: 
+      - { title: "One Time Alliance", href: "http://www.onetimealliance.ca", align: right }
+      - { title: "Fair Vote", href: "https://www.fairvote.ca", align: right }
+#   html_document:
+#     number_sections: true
+#     # code_folding: hide # need knitr::opts_chunk$set(echo=T)
+#     toc: true
+#     # toc_depth: 4
+#     toc_float: true
+#     # collapsed: true
+#    # smooth_scroll: true
+#     # smooth_scrool: true
+# # author: "Dmitry Gorodnichy"
+# author: "Dmitry Gorodnichy (Contact: dmitry@gorodnichy.ca)"
+# date: "Draft. Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+# # runtime: shiny
+---
+
+
+```{r source, include=FALSE, warning=FALSE, echo=F}
+source("election01_read.R")
+input <- list()
+
+```

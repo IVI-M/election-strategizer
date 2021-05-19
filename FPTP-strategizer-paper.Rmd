@@ -1,0 +1,345 @@
+---
+# title: "One Time Alliance "
+title: "FPTP Election Strategizer"
+# title: "FPTP Bias Mitigation Tool" 
+# title: "FPTP Bias Mitigator" 
+# subtitle:  "A data-science driven tool to help underrepresented parties to win more seats in next election"
+# subtitle:  "A data-science driven tool to help political parties that are disadvantaged by the First Past The Post electoral system to win more seats in the next election"
+subtitle:  "A data-science driven tool to mitigate the political biases of the First Past The Post  electoral system"
+output: 
+  html_document:
+    number_sections: true
+    # code_folding: hide # need knitr::opts_chunk$set(echo=T)
+    toc: true
+    # toc_depth: 4
+    toc_float: true
+    # collapsed: true
+   # smooth_scroll: true
+    # smooth_scrool: true
+# author: "Dmitry Gorodnichy"
+author: "Dmitry Gorodnichy (Contact: dmitry@gorodnichy.ca)"
+date: "Draft. Last updated: `r format(Sys.time(), '%d %B, %Y')`"
+# runtime: shiny
+---
+
+**Disclaimer:**
+<!-- **Abstract** -->
+<!-- **Raison d'être:**  -->
+
+This work is done at author's own initiative and time, in support of the [Fair Vote Canada](https://www.fairvote.ca/), [Fair Vote BC](https://fairvotingbc.com/) and [One Time Alliance for Democratic Reform](http://www.onetimealliance.ca). It is not funded by any   political party or organization. 
+
+<!-- This article and the Application are developed in support of the Fair Vote Canada and [One Time Alliance for Democratic Reform (OTA4DR)](https://www.facebook.com/groups/862670447498771), and not in support of any particular political party. It  -->
+<!-- It does not presents a non-partisan  -->
+
+<!-- # Abstract -->
+# Introduction
+
+As articulated by [www.fairvote.ca](https://www.fairvote.ca/what-is-first-past-the-post/),  Canada uses a century old *First Past The Post (FPTP)* electoral system, which favours large parties and greatly disadvantages small parties.
+Until such system is abolished in favour of more a democratic system, e.g., [proportional representation], [ranking (aka preferencial) voting], or [Second Ballot Majority Runoff] used [elsewhere](http://www.stevendroper.com/elect_system.html), 
+<!-- there will always exist the parties that will be greatly disadvantaged by the system (see Figures 1 and 2).  -->
+<!-- These are the parties that cannot , while -->
+the parties that have similar agendas will always be disadvantaged due to splitting the votes between them, and have less share of seats in the parliament than their share of popular votes, or may not have any seats at all representing the region (see Figures 1 and 2).
+
+<!-- there will always exist parties that will be greatly disadvantaged by the  -->
+
+<!-- there will always exist the *bias* in towards electing a parties that historically obtained majority of votes in the region. Other parties will be greatly disadvantaged by the system -->
+<!-- the parties that have less votes than a winning party in any particular region -->
+<!-- that the dominant regional party  -->
+<!-- (such as Green Party and NDP -- nationwide, or Liberal, NDP and Green -- in Prairies),  -->
+<!-- will *always* have much less share of seats in the parliament representing this region compared to the actual popular vote share they receive from region citizens (see Figures 1 and 2). -->
+
+
+
+
+Nevertheless, it is still possible for disadvantaged parties to gain more seats in FPTP system, for *all of them* -- should there be a political will to do that -- by building *one time alliances* and using data science. 
+
+This article and the accompanying Web Application, called *FPTP Election Strategizer*, show how to do that.
+The concepts of the "Election system bias (ESB)" and "Election fairness score (EFS)" are introduced. 
+A non-partisan data-agnostic approach to reduce  ESB and increase country's EFS is described. 
+
+The practical value of the approach is demonstrated using the  results from BC provincial elections and the last federal [43-rd Canadian election](https://enr.elections.ca/DownloadResults.aspx).
+It shown then in both cases, the parties there have been most disadvantaged by the FRTP system, which are NDP and Green party, would have both gained more seats by making the one-time-alliances in the riding that are automatically identified by the *FPTP Election Strategizer* App.
+
+<!-- First, a number of concepts are introduced and key assumptions related to the concept of "fair election" are discussed.  -->
+<!-- Then a data science driven approach (algorithm) to make an election "more fair" is presented.  -->
+<!-- The article is concluded with a summary of next steps  for interested parties and citizen on how to best leverage the developed tool -->
+
+
+```{r, echo=FALSE, out.width="33%", fig.align = "center", fig.show='hold', fig.cap="Examples of the FPTP bias: In Prairies (left) and Greater Toronto area (right). Source: www.fairvote.ca"}
+knitr::include_graphics(
+  c("https://www.fairvote.ca/wp-content/uploads/2019/12/Western-alienation-website-FPTP-page.png", "https://www.fairvote.ca/wp-content/uploads/2019/12/Toronto-Peel-halton-2019-results-website-FPTP.jpg")
+)
+
+```
+
+
+
+# Metholodology
+
+The developed approach is based on a model of what a fair election is and how it can be achieved under  various constraints. 
+The following assumptions and simplifications are made.
+<!-- the ground truth is  -->
+<!-- As in any model, it makes  use of certain assumptions and simplifications. -->
+
+
+
+
+# Fair Election premise
+
+<!-- ## Assumptions -->
+
+It is appreciated that Canada is a  multi-regional country, where each region brings its own uniqueness, cultural values and  political preferences. Therefore, an electoral system should be designed so as to allow each region to have its own voice (political party colours) in the parliament.
+In a fair election, the political colours in the parliament  represent closely all regional interests.
+In an unfair election,  the political colours in the parliament do not represent all regional interests.
+
+
+
+<!-- In unfair election, political colours in the parliament do not represent all regional interests.In unfair election, political colours in the parliament do not represent all regional interests. -->
+
+```{r, echo=FALSE, out.width="66%", fig.align = "center", fig.cap="Key Fair Election Premise: Each region has its own political colour presentation in the parliament that closely represents the interests of the region as expressed by the region voters.  Image source: www.fairvote.ca"}
+knitr::include_graphics(
+  c("https://www.fairvote.ca/wp-content/uploads/2019/12/Giselas-maps-no-branding.jpg")
+)
+
+```
+
+
+<!-- ## Assumptions and allowances of the model -->
+
+## Assumptions 
+
+### Estimating "Ground truth"  political preferences in regions
+
+One may never know the exact share (percentage) of population in a given region supporting one party or another, the so called "ground truth"
+Such ground truth is commonly estimated using one of two methods: a)  historical [election results](https://en.wikipedia.org/wiki/Results_of_the_2019_Canadian_federal_election) , b) latest [public opinion polls](https://newsinteractives.cbc.ca/elections/poll-tracker/canada/) such as those published by [CBC]((https://newsinteractives.cbc.ca/elections/poll-tracker/canada/), for example.
+
+Each of these has limitations. The  former, based on using historical FPTP election results, should be expected to be skewed towards the winner and runner-up(s) (as many votes will vote not for the party they support the most, but for the party who has the largest chance to come first)[2], it shows however riding by riding variation within the same region, and may show the outdated numbers.
+
+[2] https://en.wikipedia.org/wiki/Results_of_the_2019_Canadian_federal_election#Strategic_voting_and_vote_splitting
+
+The latter provides more recent numbers and can be expected to be less skewed (because it is not a real election, and respondents answers do not influence any outcome)
+
+
+
+
+<!-- ## Terminology -->
+
+## Concepts and metrics
+
+
+For the description of the approach the ![following terminology][1] is introduced.
+
+[1] The choice of names for terminology is that by the author. It is introduced solely to stimulate the discussion and facilitate the presentation, 
+rather that to be authoritative reference on the subject, 
+which is rather new for the author. 
+<!-- who has not been ever involved in politics. -->
+<!-- does not have any political background. -->
+
+<!-- (or undemocratic bias) -->
+<!-- (national undemocratic bias factor): -->
+
+
+<!-- - Undemocratic advantage: ... -->
+<!-- - Democracy gap: the difference between  -->
+- `Regional electoral system political bias` (or `FPTP bias` for Canada) $B_{party}^{region}$  is the difference between `Seats share` and `Votes share` for a  `party` in a `region`. Positive bias ($B_{party}>0$) indicates that $party$ takes advantage of the FPTP system in the $region$. Negative ($B_{party}<0$) shows the parties that are disadvantaged by the system in the region.
+- National FPTP bias score $BF$ : a number assigned to a country based on the election results that aggregates FPTP biased of all regions. A truly democratic `national electroral system bias score` should be close to zero. In contrast, 
+<!-- - Country election's democratic rate: the same as  -->
+- Election fairness score: 
+- Disadvantaged party: ...
+- Winnable riding for a party: the riding the party 
+- Alliance win-win riding pair: a pair (or a tuple) of winnable ridings where
+- win-win riding pair:
+- Win-win strategy: a 
+- One time alliance for democratic election: election-specific  alliance between two or more parties aimed at increasing the `Election fairness score` by means of applying a `Win-win strategy`.
+
+
+## Formalization of the problem
+
+
+Given: an understanding on political preferences in each province/region (from [past elections]() or [public opinion polls]()), expressed a  vector of popular vote share (%) given to each political party at each province/region: $\vec V_{region} = (V^{Lib}, V^{Con}, V^{NDP}, V^{Grn}, V^{Other)})$, obtain: the  vector of seats share in the parliment $\vec S_{region} = (S^{Lib}, S^{Con}, S^{NDP}, S^{Grn}, S^{Other)})$ that is the closest to $\vec V_{region}$ for each region.
+
+The number of regions can vary from one (country is one big region) to the number of provinces/territories (each one is the region ) and can be used as a parameter that be  adjusted in the Application.
+
+## The algorithm
+
+
+
+- Step 1. In each region, 
+compute FPTP  Bias for each party (as the difference between share  of votes and share of seats the party gets) and find parties that are most disadvantaged by the FPTP.  These will be partied that the algorithm will help to achieve better results by using a win-win alliance strategy.
+
+<!-- - Step 2. Compute Fairness score (Democracy Success rate), (as the percentage of votes whose vote was respected, i.e). This  -->
+- Step 2. In each region. 
+Compute _Democracy Failure score_ (%), as the percentage of voters whose vote was not used (ignored/disrespected). This will be the objective function that the algorithm will minimize.
+
+V
+- Step 3. In each region, find the parties disadvantaged by FPTP (which have the highest negative bias coefficient)
+
+#  Example: Canadian 43-rd election results (2019)
+
+<!-- Tables 1 and 2 show the results from 43-rd election election at regional level and riding level,  -->
+
+Tables 1 shows the results from 43-rd election election at regional level, organized for easier side-by side comparison of Seats shares $\vec S_{region}$ to Votes shares $\vec V_{region}$ for each province.
+<!-- Note: The tables are interactive. The results can be filtered and sorted by any column variable. -->
+
+...
+
+
+<!-- It is seen tha -->
+
+
+```{r source, include=FALSE, warning=FALSE, echo=F}
+source("election01_read.R")
+input <- list()
+
+```
+
+## RESULTS HHHHHHH
+
+
+
+### Test
+
+
+```{r}
+
+dtByProvince %>% kable()
+
+cat("tttttttttttttt")
+
+dtByProvince %>% datatable(
+  filter="top",  rownames = F, 
+    extensions = c('Buttons'),
+    options = list( 
+                   buttons = c('copy', 'csv', 'excel', 'pdf', 'print')  
+  )
+)
+
+
+```
+
+
+## {data-height=1000 .tabset .tabset-fade }
+
+*Table 1: Seats share vs.  Votes shares in each province. Last column shows election bias factor*
+
+### Table 1
+
+```{r dtByProvince}
+dtByProvince %>%     kable(
+    caption = "Table 1: Seats share vs.  Votes shares in each province. Last column shows election bias factor"
+  )
+```
+
+
+### Interactive table
+
+
+Table sorted by the share of Votes Ignored: Democracy Failed (%)
+
+```{r results='asis'}
+
+dtByProvince %>% datatable (rownames = F, filter = "top")
+
+```
+
+
+
+
+Table 2 shows the results at the riding level.
+Table sorted by t....
+The table is interactive version of the table allows one to find the ridings where disadvantaged parties can win, if  they team up.
+
+
+
+*Table 2: Votes distribution in ridings. Last four columns show statistics related to forming one-time alliances"*
+
+## {data-height=1000 .tabset .tabset-fade }
+
+### Table 2
+
+```{r dtByRiding}
+
+dtByRiding %>%     kable(
+    caption = "Table 1: Seats share vs.  Votes shares in each province. Last column shows election bias factor"
+  )
+```
+
+
+### Interactive Table 
+
+```{r}
+dtByRiding %>% datatable (rownames = F, filter = "top")
+```
+
+
+## Finding  "win-win" winnable riding pairs
+
+Tables 3 shows the ridings  where  Liberals and NDP did not win, but they could have both won more seats, if they teamed up. 
+Similarly, Table 4 shows the ridings where NDP and Green did not win, but could have, if they cooperated with each other.
+<!-- and  dropped their candidate in each identified riding. -->
+
+
+The tables are sorted by province and then by proximity of the party Alliance pair to the winner and  the inter-party vote difference within the Alliance pair. 
+The formula to identify these ridings is provided. A threshold `proximityToWinner` (currently set to 10%) is used to find the ridings where the combined number of votes for alliance parties is larger (or close up to 10%) than the number of votes the party who past the post first (shown in Column `1st`).
+
+
+Looking at these tables, one can identify pairs (or tuples) of regions, where disadvantaged parties can both win.
+
+
+Critically, it is important to note that *both* participating parties would have won more seats in each identified riding pairs. This is why it is called a "win-win" strategy. Parties with small number of votes   who drop their candidates in the identified riding, have anything to lose,  while allowing the partnering party to win. in exchange however the other party would do the same in another riding identifies using the table.
+
+
+
+```{r echo=T}
+
+  dtByProvince %>%  d7.datatable
+  dtByRiding %>%  d7.datatable
+  dtBias[order(-total,Bias)] %>% d7.datatable
+  dtByRiding1[ order(-get(colTogetherOver1st) ) ]   %>% d7.datatable(1,2)
+
+# 
+# input$proximityToWinner <- 10
+# 
+# dtByRiding[`1`!="NDP" & `1`!="Lib" & `1st-(Lib+NDP)` < input$proximityToWinner ][order(Province, `1st-(Lib+NDP)`, `Lib-NDP`)] %>%
+#   setcolorder(c("1st-(Lib+NDP)", "Lib-NDP")) %>%   kable(    caption = "Table 3: Opportunities for Liberal-NDP Alliances" )
+```
+
+
+
+
+
+
+
+```{r echo=T}
+# dtByRiding[`1`!="NDP" &`1`!="Grn" & `1st-(NDP+Grn)`< input$proximityToWinner][order(`1st-(NDP+Grn)`, `NDP-Grn`)]  %>% 
+#   setcolorder(c("1st-(NDP+Grn)", "NDP-Grn")) %>%   kable(  caption = "Table 4: Opportunities for NDP-Green Alliances" )
+
+
+```
+
+### Summary
+
+It is seen that in many egions there are ridings where inter-party vote difference is both negative and positive. It is this  observation that enables  *both* involved parties to benefit from cooperation with each other.  Simply, by agreeing that both  parties will not run (i.e. will cooperate with each other) where their Alliance partner has more votes, will allow the partnering party to gain enough votes to win.
+
+
+
+
+<!-- Additional mathematical analysis can be done to calculate a "fair" exchange rate. - If one party of the Alliance pair has considerably more votes than its partner party, than a smaller party may remove its candidate from more than one riding to allow a larger party to help a smaller party to advance in one riding. -->
+
+<!-- Importantly, it is that  inter-party vote difference variable: `Lib-NDP` variable, there  -->
+
+
+
+
+# Next Steps
+
+
+
+The idea is to make the Web App that will be fully automated. 
+For each region, it will find automatically the ridings, where the parties who cannot win without Alliance, can win with Alliance. (In probabilistic sense, of course, based on the poll results)
+
+
+<!-- The region size can be selected by the user, ranging from 1 region  - ridings fro the entire country can make an Alliance, to 11  - each province will make its own Alliance) -->
+
+The  App will be fully automated, party and region agnostic, meaning that any party that is identified by the App as a "disadvantaged party" in a given region (i.e. as the party with large negative FPTP bias in that region) will be given automatically recommendations by the App related to which other party to make an Alliance and in which ridings of that region.
+
